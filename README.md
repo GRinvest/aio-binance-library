@@ -1,5 +1,5 @@
-# aio-binance-futures
-# Binance Futures Public Async API Connector Python
+# aio-binance-library
+# Binance Public Async API Connector Python
 [![Python 3.7](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -72,10 +72,10 @@ the methods' optional parameters should follow their exact naming as in the API 
 
 ```python
 # Recognised parameter name
-response = client.query_order('BTCUSDT', orderListId=1)
+response = await client.query_order('BTCUSDT', orderListId=1)
 
 # Unrecognised parameter name
-response = client.query_order('BTCUSDT', order_list_id=1)
+response = await client.query_order('BTCUSDT', order_list_id=1)
 ```
 
 ### Timeout
@@ -99,7 +99,8 @@ You can display them by initializing the client with `show_limit_usage=True`:
 from aio_binance.futures.usdt import Client
 
 client = Client(show_limit_usage=True)
-print(client.time())
+res = await client.time()
+print(res)
 ```
 returns:
 
@@ -110,7 +111,8 @@ You can also display full response metadata to help in debugging:
 
 ```python
 client = Client(show_header=True)
-print(client.time())
+res = await client.time()
+print(res)
 ```
 
 returns:
