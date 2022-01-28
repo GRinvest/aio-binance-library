@@ -1,6 +1,6 @@
 import asyncio
 
-from aio_binance_futures import WsClient
+from aio_binance.futures.usdt import WsClient
 
 SYMBOL = 'BTCUSDT'
 

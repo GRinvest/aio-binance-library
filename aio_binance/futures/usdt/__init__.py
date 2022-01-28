@@ -2,6 +2,7 @@ from sys import stderr
 
 from loguru import logger
 
+from aio_binance.__version__ import __version__
 from .api.query import Api
 from .websocket.query import Ws
 
@@ -22,7 +23,7 @@ class Client(Api):
             testnet: bool = False,
             debug: str = "error"):
         logger.level(debug.upper())
-        super().__init__(key=key, secret=secret, testnet=testnet)
+        super().__init__(key=key, secret=secret, testnet=testnet, version=__version__)
 
     # ACCOUNT(including orders and trades)
     from .api.account import (account, adl_quantile, api_trading_status,

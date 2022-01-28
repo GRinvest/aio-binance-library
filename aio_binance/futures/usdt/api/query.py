@@ -30,6 +30,8 @@ class Api():
             else 'https://fapi.binance.com'
         self.session: ClientSession = None
         self.headers = {}
+        self.agent = kwargs.get('agent', 'aio-binance-futures')
+        self.version = kwargs.get('version')
 
     def __set_shift_seconds(self, seconds):
         Api.shift_seconds = seconds
@@ -89,8 +91,8 @@ class Api():
         _kwargs_deep = deepcopy(kwargs)
         self.headers = {
             'Content-Type': 'application/json',
-            'user-agent': "aiobinance-lib-py",
-            "client_SDK_Version": "aiobinance-lib-2.0.1-py3.10"
+            'user-agent': self.agent,
+            "client_SDK_Version": f"aio-binance-futures {self.version}"
         }
         if args[0]:
             assert self.key is not None, \

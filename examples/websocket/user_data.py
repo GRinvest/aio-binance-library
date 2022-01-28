@@ -1,6 +1,6 @@
 import asyncio
 
-from aio_binance_futures import Client, WsClient
+from aio_binance.futures.usdt import Client, WsClient
 from loguru import logger
 
 KEY = 'Api_Key_Binance'
