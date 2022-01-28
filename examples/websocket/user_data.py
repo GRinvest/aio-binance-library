@@ -1,9 +1,7 @@
 import asyncio
 
-from futures import Client
+from aio_binance_futures import Client, WsClient
 from loguru import logger
-
-from websocket import WsClient
 
 KEY = 'Api_Key_Binance'
 SECRET = 'Api_Secret_Binance'

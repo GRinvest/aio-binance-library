@@ -1,6 +1,6 @@
 import asyncio
 
-from websocket import WsClient
+from aio_binance_futures import WsClient
 
 
 async def calback_event(data: dict):

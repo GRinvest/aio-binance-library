@@ -1,6 +1,6 @@
 import asyncio
 
-from websocket.account import UserSession
+from aio_binance_futures.websocket.account import UserSession
 
 KEY = 'Api_Key_Binance'
 SECRET = 'Api_Secret_Binance'
