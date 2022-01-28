@@ -9,8 +9,8 @@ class Ws:
 
     def __init__(self, **kwargs):
         self.listen_key: str = kwargs.get('listen_key')
-        self.reply_timeout: int = kwargs.get('reply_timeout', 30)
-        self.ping_timeout: int = kwargs.get('ping_timeout', 5)
+        self.reply_timeout: int = kwargs.get('reply_timeout', 180)
+        self.ping_timeout: int = kwargs.get('ping_timeout', 300)
         self.sleep_time: int = kwargs.get('sleep_time', 3)
 
     async def _listen_forever(self, path: str, event: object) -> None:

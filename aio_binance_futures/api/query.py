@@ -18,11 +18,13 @@ class Api():
     shift_seconds = 0
     recconect = 0
     weight = 0
-    timeout = 2
+    timeout = 5
 
     def __init__(self, **kwargs):
         self.key = kwargs.get('key')
         self.secret = kwargs.get('secret')
+        self.show_limit_usage = kwargs.get('show_limit_usage')
+        self.show_header = kwargs.get('show_header')
         self.host = 'https://testnet.binancefuture.com' \
             if kwargs.get('testnet') \
             else 'https://fapi.binance.com'
@@ -142,4 +144,8 @@ class Api():
                     f"(Binance Futures Api) [ValueError]: {_responce}")
             else:
                 self.__check_response(res_json)
+                if self.show_limit_usage:
+                    res_json['limit_usage'] = Api.weight
+                if self.show_header:
+                    res_json['header'] = responce.headers
                 return res_json
