@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: aio-binance-library
-Version: 2.0.3
+Version: 2.0.4
 Summary: This is a lightweight Async library that works as a connector to Binance public API and WebSocket.
 Home-page: https://github.com/GRinvest/aio-binance-library
 Author: GRinvest
@@ -29,6 +29,8 @@ Description-Content-Type: text/markdown
 
 This is a lightweight library that works as a connector to [Binance Futures public API](https://binance-docs.github.io/apidocs/futures/en/)
 
+
+
 - Supported APIs:
     - USDT-M Futures `/fapi/*``
     - Futures/Delivery Websocket Market Stream
@@ -42,7 +44,7 @@ This is a lightweight library that works as a connector to [Binance Futures publ
 pip install aio-binance-library
 ```
 
-##Getting started
+## Getting started
 
 ### REST API
 
@@ -89,13 +91,13 @@ create_private_order()
 or
 get_public_time()
 ```
-####Available Methods:
-create, get, delete, change, update
+#### Methods:
+`create, get, delete, change, update`
 
-####Availability:
-private - methods where key_api and secret_api are required
+#### Availability:
+`private` - methods where key_api and secret_api are required
 
-public - you can get information without a key
+`public` - you can get information without a key
 
 
 ### Testnet

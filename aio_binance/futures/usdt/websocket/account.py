@@ -77,7 +77,8 @@ class UserSession:
 
     async def __aenter__(self):
         res = await self.__api.create_private_listen_key()
-        self.listen_key = res['listenKey']
+        self.listen_key = res['data']['listenKey']
+        print(self.listen_key)
         logger.log("ACCOUNT", '  listenKey add success  Connected')
         return self
 

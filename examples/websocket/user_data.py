@@ -17,7 +17,7 @@ async def steam_account():
     """
     api = Client(KEY, SECRET)
     res = await api.create_private_listen_key()
-    await WsClient(res['listenKey']).stream_user_data(callback_event)
+    await WsClient(res['data']['listenKey']).stream_user_data(callback_event)
 
 try:
     asyncio.run(steam_account())
