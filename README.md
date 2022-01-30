@@ -1,7 +1,11 @@
 # aio-binance-library
-# Binance Public Async API Connector Python
-[![Python 3.7](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/release/python-370/)
+# Async library for connecting to the Binance API on Python
+[![Python 3.7](https://img.shields.io/badge/python-3.7|3.8|3.9|3.10-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Aiohttp: 3.8.1](https://img.shields.io/badge/aiohttp-3.8.1-blue.svg)](https://github.com/aio-libs/aiohttp)
+[![Loguru: 0.5.3](https://img.shields.io/badge/loguru-0.5.3-blue.svg)](https://github.com/Delgan/loguru)
+[![Ujson: 0.5.3](https://img.shields.io/badge/ujson-5.1.0-blue.svg)](https://github.com/ultrajson/ultrajson)
+[![Docstrings: Google](https://img.shields.io/badge/Docstrings-Google-black.svg)](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html)
 
 This is a lightweight library that works as a connector to [Binance Futures public API](https://binance-docs.github.io/apidocs/futures/en/)
 
@@ -18,8 +22,9 @@ This is a lightweight library that works as a connector to [Binance Futures publ
 pip install aio-binance-library
 ```
 
+##Getting started
 
-## RESTful APIs
+### REST API
 
 Usage examples:
 ```python
@@ -28,32 +33,50 @@ from aio_binance.futures.usdt import Client
 
 async def main():
     client = Client()
-    res = await client.time()
+    res = await client.get_public_time()
     print(res)
 
     client = Client(key='<api_key>', secret='<api_secret>')
 
     # Get account information
-    res = await client.account()
+    res = await client.get_private_account_info()
     print(res)
 
     # Post a new order
     params = {
         'symbol': 'BTCUSDT',
         'side': 'SELL',
-        'type': 'LIMIT',
+        'type_order': 'LIMIT',
         'timeInForce': 'GTC',
         'quantity': 0.002,
         'price': 59808
     }
 
-    res = await client.new_order(**params)
-    print(response)
+    res = await client.create_private_order(**params)
+    print(res)
 
 asyncio.run(main())
 
 ```
 Please find `examples` folder to check for more endpoints.
+
+### Notes
+The methods you need, adheres to a hierarchy
+```
+<method>_<availability>_<method_name>
+
+create_private_order()
+or
+get_public_time()
+```
+####Available Methods:
+create, get, delete, change, update
+
+####Availability:
+private - methods where key_api and secret_api are required
+
+public - you can get information without a key
+
 
 ### Testnet
 
@@ -67,15 +90,15 @@ client= Client(testnet=True)
 
 ### Optional parameters
 
-PEP8 suggests _lowercase with words separated by underscores_, but for this connector,
-the methods' optional parameters should follow their exact naming as in the API documentation.
+
+Parameters can be passed in different formats as in Binance api documents or PEP8 suggests _lowercase with words separated by underscores_
 
 ```python
-# Recognised parameter name
-response = await client.query_order('BTCUSDT', orderListId=1)
+# Binance api
+response = await client.get_private_open_order('BTCUSDT', orderListId=1)
 
-# Unrecognised parameter name
-response = await client.query_order('BTCUSDT', order_list_id=1)
+# PEP8
+response = await client.get_private_open_order('BTCUSDT', order_list_id=1)
 ```
 
 ### Timeout
@@ -140,22 +163,29 @@ import asyncio
 from aio_binance.futures.usdt import WsClient
 
 
-async def calback_event(data: dict):
+async def callback_event(data: dict):
     print(data)
 
+
 async def main():
+
     ws = WsClient()
     stream = [
-        ws.liquidation_order(),
-        ws.book_ticker(),
-        ws.ticker('BTCUSDT')
+        ws.stream_liquidation_order(),
+        ws.stream_book_ticker(),
+        ws.stream_ticker('BTCUSDT')
     ]
     res = await asyncio.gather(*stream)
-    await ws.subscription_streams(res, calback_event)
+    await ws.subscription_streams(res, callback_event)
 
 asyncio.run(main())
 ```
 More websocket examples are available in the `examples` folder
+
+### Note
+Stream methods start with the word `stream` Example: `stream_<name_method>`
+
+Subscribing to multiple streams: `subscription_streams()`
 
 ### Heartbeat
 

@@ -38,20 +38,20 @@ async def adapter_event(data: dict):
 async def main():
     tasks = [
         asyncio.create_task(
-            WsClient().mark_price(
+            WsClient().stream_mark_price(
                 SYMBOL,
                 callback_event=adapter_event)),
         asyncio.create_task(
-            WsClient().liquidation_order(
+            WsClient().stream_liquidation_order(
                 SYMBOL,
                 callback_event=adapter_event)),
         asyncio.create_task(
-            WsClient().kline(
+            WsClient().stream_kline(
                 SYMBOL,
                 '1m',
                 callback_event=adapter_event)),
         asyncio.create_task(
-            WsClient().partial_book_depth(
+            WsClient().stream_partial_book_depth(
                 SYMBOL,
                 callback_event=adapter_event))
     ]

@@ -7,3 +7,5 @@ test*
 *.toml
 .DS_Store
 .thumbs.db
+.idea
+*.egg-info

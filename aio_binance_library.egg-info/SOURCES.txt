@@ -2,11 +2,12 @@ README.md
 setup.py
 aio_binance/__init__.py
 aio_binance/__version__.py
+aio_binance/error_handler/__init__.py
+aio_binance/error_handler/error.py
 aio_binance/futures/__init__.py
 aio_binance/futures/usdt/__init__.py
 aio_binance/futures/usdt/api/__init__.py
 aio_binance/futures/usdt/api/account.py
-aio_binance/futures/usdt/api/error.py
 aio_binance/futures/usdt/api/market.py
 aio_binance/futures/usdt/api/query.py
 aio_binance/futures/usdt/api/stream.py

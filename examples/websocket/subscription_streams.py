@@ -3,12 +3,13 @@ import asyncio
 from aio_binance.futures.usdt import WsClient
 
 
-async def calback_event(data: dict):
+async def callback_event(data: dict):
     """
     Args:
         data (dict): Combined stream events are wrapped as follows: {"stream":"<streamName>","data":<rawPayload>}
     """
     print(data)
+
 
 async def main():
     """
@@ -18,11 +19,11 @@ async def main():
     """
     ws = WsClient()
     stream = [
-        ws.liquidation_order(),
-        ws.book_ticker(),
-        ws.ticker('BTCUSDT')
+        ws.stream_liquidation_order(),
+        ws.stream_book_ticker(),
+        ws.stream_ticker('BTCUSDT')
     ]
     res = await asyncio.gather(*stream)
-    await ws.subscription_streams(res, calback_event)
+    await ws.subscription_streams(res, callback_event)
 
 asyncio.run(main())

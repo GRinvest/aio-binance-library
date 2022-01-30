@@ -6,6 +6,9 @@ from loguru import logger
 
 
 class Ws:
+    """
+
+    """
 
     def __init__(self, **kwargs):
         self.listen_key: str = kwargs.get('listen_key')
@@ -22,6 +25,8 @@ class Ws:
             async with aiohttp.ClientSession() as client:
                 async with client.ws_connect(_url, autoclose=False, autoping=False, ssl=True) as self.ws:
                     logger.log('WEBSOCKET', f'Creating new connection {_url}')
+                    msg = 'user_data' if self.listen_key else path
+                    logger.log('WEBSOCKET', f'Now you can expect new events {msg} in the function passed to me...')
                     await self.__dispatch(event)
 
     async def __dispatch(self, event) -> None:
@@ -65,9 +70,7 @@ class Ws:
                 elif msg.type == aiohttp.WSMsgType.PING:
                     await self.ws.pong()
                 elif msg.type == aiohttp.WSMsgType.PONG:
-                    logger.log(
-                    'WEBSOCKET',
-                    'Pong received')
+                    logger.log('WEBSOCKET', 'Pong received')
                 else:
                     if msg.type == aiohttp.WSMsgType.CLOSE:
                         await self.ws.close()

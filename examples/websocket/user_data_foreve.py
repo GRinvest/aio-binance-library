@@ -1,18 +1,24 @@
 import asyncio
 
+from loguru import logger
+
 from aio_binance.futures.usdt.websocket.account import UserSession
 
-KEY = 'Api_Key_Binance'
-SECRET = 'Api_Secret_Binance'
+KEY = 'Key_Binance_Api'
+SECRET = 'Secret_Binance_Api'
 
 
-async def calback_event(data: dict):
+async def callback_event(data: dict):
     print(data)
 
 
 async def main():
     while True:
-        async with UserSession(KEY, SECRET, calback_event):
-            pass
+        async with UserSession(KEY, SECRET, debug='debug') as session:
+            await session.run(callback_event)
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    logger.info('Close Program Ctrl C')
+
