@@ -47,7 +47,7 @@ async def main():
         'symbol': 'BTCUSDT',
         'side': 'SELL',
         'type_order': 'LIMIT',
-        'timeInForce': 'GTC',
+        'time_in_force': 'GTC',
         'quantity': 0.002,
         'price': 59808
     }
