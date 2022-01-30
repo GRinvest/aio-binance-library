@@ -69,13 +69,13 @@ create_private_order()
 or
 get_public_time()
 ```
-#### Available Methods:
-create, get, delete, change, update
+#### Methods:
+`create, get, delete, change, update`
 
 #### Availability:
-private - methods where key_api and secret_api are required
+`private` - methods where key_api and secret_api are required
 
-public - you can get information without a key
+`public` - you can get information without a key
 
 
 ### Testnet
