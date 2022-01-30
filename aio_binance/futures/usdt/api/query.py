@@ -16,34 +16,6 @@ def _set_shift_seconds(seconds) -> None:
     Api.shift_seconds = seconds
 
 
-def _check_response(json_wrapper: dict | list) -> None:
-    code = 200
-    msg = ""
-    if isinstance(json_wrapper, list):
-        for item in json_wrapper:
-            if isinstance(item, Dict) and \
-                item.get('code') and \
-                    item['code'] != 200:
-                code = item['code']
-                msg = json_wrapper
-                break
-    else:
-        if json_wrapper.get("code"):
-            code = int(json_wrapper["code"])
-            msg = json_wrapper.get("msg", "")
-    if code != 200:
-        if code == -1021:
-            _set_shift_seconds(Api.shift_seconds - 1)
-        elif code == -1003:
-            start = msg.find(' ', msg.find('until'))
-            end = msg.find('.', start)
-            timer = int((int(msg[start:end-1]) - int(time() * 100)) / 100)
-            logger.log('API', f"Binance banned IP. I'll be waiting {timer} sec.")
-            sleep(timer)
-        else:
-            raise BinanceException(code, msg)
-
-
 class Api:
 
     shift_seconds = 0
@@ -64,6 +36,32 @@ class Api:
         self.agent = kwargs.get('agent', 'aio-binance-library')
         self.version = kwargs.get('version')
 
+    async def _check_response(self, json_wrapper: dict | list) -> None | dict:
+        code = 200
+        msg = ""
+        if isinstance(json_wrapper, list):
+            for item in json_wrapper:
+                if isinstance(item, Dict) and \
+                        item.get('code') and \
+                        item['code'] != 200:
+                    code = item['code']
+                    msg = json_wrapper
+                    break
+        else:
+            if json_wrapper.get("code"):
+                code = int(json_wrapper["code"])
+                msg = json_wrapper.get("msg", "")
+        if code != 200:
+            if code == -1021:
+                _set_shift_seconds(Api.shift_seconds - 1)
+            elif code == -1003:
+                start = msg.find(' ', msg.find('until'))
+                end = msg.find('.', start)
+                timer = int((int(msg[start:end - 1]) - int(time() * 100)) / 100)
+                logger.log('API', f"Binance banned IP. I'll be waiting {timer} sec.")
+                sleep(timer)
+            raise BinanceException(code, msg)
+
     def __crypto_key(self, params: Dict) -> None:
         params.update({
             'recvWindow': 60000,
@@ -77,7 +75,7 @@ class Api:
         ).hexdigest()
         params.update({'signature': str(sign)})
 
-    async def __reconnect(self, args, kwargs, sleeping, err):
+    async def __reconnect(self, sleeping, err):
         if Api.reconnect > 10:
             raise BinanceException(
                 500,
@@ -91,10 +89,12 @@ class Api:
                            f" I'll wait {sleeping} sec. and try again," +
                            f" effort № {Api.reconnect} | Such a mistake: {err}")
             sleep(sleeping)
-            return await self._fetch(*args, **kwargs)
+            return await self._fetch(*self._args, **self._kwargs_deep)
 
     async def _fetch(self, *args, **kwargs) -> Dict:
-        _kwargs_deep = deepcopy(kwargs)
+        result = {}
+        self._args = args
+        self._kwargs_deep = deepcopy(kwargs)
         self.headers = {
             'Content-Type': 'application/json',
             'user-agent': self.agent,
@@ -135,7 +135,7 @@ class Api:
                 if int(response.headers['X-MBX-USED-WEIGHT-1M']) > 0\
                 else response.headers['X-MBX-ORDER-COUNT-1M']
         except Exception as err:
-            return await self.__reconnect(args, _kwargs_deep, 5, err)
+            return await self.__reconnect(5, err)
         else:
             if Api.reconnect > 0:
                 Api.reconnect = 0
@@ -153,9 +153,10 @@ class Api:
                     -1,
                     f"(Binance Futures Api) [Json Value Error] response: {_response}")
             else:
-                _check_response(res_json)
+                await self._check_response(res_json)
+                result['data'] = res_json
                 if self.show_limit_usage:
-                    res_json['limit_usage'] = Api.weight
+                    result['limit_usage'] = Api.weight
                 if self.show_header:
-                    res_json['header'] = response.headers
-                return res_json
+                    result['header'] = response.headers
+                return result
