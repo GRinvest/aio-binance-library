@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: aio-binance-library
-Version: 2.0.4
+Version: 2.0.5
 Summary: This is a lightweight Async library that works as a connector to Binance public API and WebSocket.
 Home-page: https://github.com/GRinvest/aio-binance-library
 Author: GRinvest
@@ -69,7 +69,7 @@ async def main():
         'symbol': 'BTCUSDT',
         'side': 'SELL',
         'type_order': 'LIMIT',
-        'timeInForce': 'GTC',
+        'time_in_force': 'GTC',
         'quantity': 0.002,
         'price': 59808
     }
