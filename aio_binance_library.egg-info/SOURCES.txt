@@ -8,6 +8,7 @@ aio_binance/error_handler/error.py
 aio_binance/futures/__init__.py
 aio_binance/futures/usdt/__init__.py
 aio_binance/futures/usdt/api/__init__.py
+aio_binance/futures/usdt/api/manager.py
 aio_binance/futures/usdt/api/query.py
 aio_binance/futures/usdt/api/methods/__init__.py
 aio_binance/futures/usdt/api/methods/account.py
