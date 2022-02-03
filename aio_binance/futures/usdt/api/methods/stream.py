@@ -1,7 +1,7 @@
 
 class DataStream:
 
-    async def create_private_listen_key(self):
+    async def create_private_listen_key(self) -> dict:
         """**Create a ListenKey (USER_STREAM)**
 
         Notes:
@@ -15,7 +15,7 @@ class DataStream:
             '/fapi/v1/listenKey'
         )
 
-    async def update_private_listen_key(self):
+    async def update_private_listen_key(self) -> dict:
         """**Ping/Keep-alive a ListenKey (USER_STREAM)**
 
         Notes:
@@ -29,7 +29,7 @@ class DataStream:
             '/fapi/v1/listenKey'
         )
 
-    async def delete_private_listen_key(self):
+    async def delete_private_listen_key(self) -> dict:
         """**Close a ListenKey (USER_STREAM)**
 
         Notes:

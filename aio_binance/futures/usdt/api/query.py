@@ -1,7 +1,7 @@
 import hmac
+import time
 from copy import deepcopy
 from hashlib import sha256
-from time import sleep, time
 from typing import Dict
 from urllib.parse import urlencode
 
@@ -9,19 +9,16 @@ import ujson
 from aiohttp import ClientSession
 from loguru import logger
 
+from aio_binance.__version__ import __version__
 from aio_binance.error_handler.error import BinanceException
-
-
-def _set_shift_seconds(seconds) -> None:
-    Api.shift_seconds = seconds
+from aio_binance.timer import AioTimer
 
 
 class Api:
 
-    shift_seconds = 0
-    reconnect = 0
-    weight = 0
-    timeout = 5
+    SHIFT_SECONDS = 0
+    RECONNECT = 0
+    WEIGHT = 0
 
     def __init__(self, **kwargs):
         self.key = kwargs.get('key')
@@ -32,11 +29,23 @@ class Api:
             if kwargs.get('testnet') \
             else 'https://fapi.binance.com'
         self.session: ClientSession = None
-        self.headers = {}
+        self.timeout = kwargs.get('timeout', 5)
+        self.__init_params(self.timeout)
         self.agent = kwargs.get('agent', 'aio-binance-library')
-        self.version = kwargs.get('version')
 
-    async def _check_response(self, json_wrapper: dict | list) -> None | dict:
+    @classmethod
+    def __init_params(cls, timeout):
+        cls.HEADERS = {
+            "client_SDK_Version": f"aio-binance-library v{__version__}-py3.10"
+        }
+        cls.TIMEOUT = timeout
+
+    @classmethod
+    def __set_shift_seconds(cls, seconds) -> None:
+        cls.SHIFT_SECONDS = seconds
+
+    @classmethod
+    async def __check_response(cls, json_wrapper: dict | list) -> None:
         code = 200
         msg = ""
         if isinstance(json_wrapper, list):
@@ -53,19 +62,19 @@ class Api:
                 msg = json_wrapper.get("msg", "")
         if code != 200:
             if code == -1021:
-                _set_shift_seconds(Api.shift_seconds - 1)
+                cls.__set_shift_seconds(cls.SHIFT_SECONDS - 1)
             elif code == -1003:
                 start = msg.find(' ', msg.find('until'))
                 end = msg.find('.', start)
-                timer = int((int(msg[start:end - 1]) - int(time() * 100)) / 100)
+                timer = int((int(msg[start:end - 1]) - int(time.time() * 100)) / 100)
                 logger.log('API', f"Binance banned IP. I'll be waiting {timer} sec.")
-                sleep(timer)
+                time.sleep(timer)
             raise BinanceException(code, msg)
 
     def __crypto_key(self, params: Dict) -> None:
         params.update({
             'recvWindow': 60000,
-            'timestamp': int((time() + Api.shift_seconds - 1) * 1000)
+            'timestamp': int((time.time() + self.SHIFT_SECONDS - 1) * 1000)
         })
         params_str = urlencode(params).encode('utf-8')
         sign = hmac.new(
@@ -76,76 +85,71 @@ class Api:
         params.update({'signature': str(sign)})
 
     async def __reconnect(self, sleeping, err):
-        if Api.reconnect > 10:
+        if self.RECONNECT > 10:
             raise BinanceException(
                 500,
                 f"(Binance Futures Api) Sorry )-: My attempts to connect have dried up." +
                 f"More than 10. I exit | Exception {err}")
         else:
-            Api.timeout += 2
-            Api.reconnect += 1
-            sleeping += Api.reconnect
+            self.TIMEOUT += 2
+            self.RECONNECT += 1
+            sleeping += self.RECONNECT
             logger.warning(f"(Binance Futures Api) Unable to connect {self.host}," +
                            f" I'll wait {sleeping} sec. and try again," +
-                           f" effort № {Api.reconnect} | Such a mistake: {err}")
-            sleep(sleeping)
+                           f" effort № {self.RECONNECT}")
+            time.sleep(sleeping)
             return await self._fetch(*self._args, **self._kwargs_deep)
 
     async def _fetch(self, *args, **kwargs) -> Dict:
         result = {}
         self._args = args
         self._kwargs_deep = deepcopy(kwargs)
-        self.headers = {
-            'Content-Type': 'application/json',
-            'user-agent': self.agent,
-            "client_SDK_Version": f"aio-binance-library v{self.version}-py3.10"
-        }
+        self.HEADERS.update({'user-agent': self.agent})
         if 'private' in args[1]:
             assert self.key is not None, \
                 f"For job function {args[1]}() needs api key binance, please add in Client()"
             assert self.secret is not None, \
                 f"For job function {args[1]}() needs api secret binance, please add in Client()"
-            self.headers.update({"X-MBX-APIKEY": self.key})
+            self.HEADERS.update({"X-MBX-APIKEY": self.key})
             self.__crypto_key(kwargs)
+        else:
+            self.HEADERS.pop("X-MBX-APIKEY", None)
         url = self.host + args[2]
         request_data = {
             'method': args[0],
             'url': url,
-            'timeout': Api.timeout
+            'timeout': self.TIMEOUT
         }
         if args[0] == 'GET':
-            request_data['headers'] = self.headers
+            self.HEADERS.update({'Content-Type': 'application/json'})
             request_data['params'] = kwargs if kwargs.keys() else None
         else:
-            self.headers.update({
-                'Content-Type': 'application/x-www-form-urlencoded'
-            })
-            request_data['headers'] = self.headers
+            self.HEADERS.update({'Content-Type': 'application/x-www-form-urlencoded'})
             request_data['data'] = kwargs if kwargs.keys() else None
+        request_data['headers'] = self.HEADERS
         try:
-            start_time = time() * 1000
-            if self.session:
-                async with self.session.request(**request_data) as response:
-                    _response = await response.text()
-            else:
-                async with ClientSession() as session:
-                    async with session.request(**request_data) as response:
+            async with AioTimer(name=f'Binance Futures Api request {args[2]}'):
+                if self.session:
+                    async with self.session.request(**request_data) as response:
                         _response = await response.text()
-            Api.weight = response.headers['X-MBX-USED-WEIGHT-1M']\
+                else:
+                    async with ClientSession() as session:
+                        async with session.request(**request_data) as response:
+                            _response = await response.text()
+            self.WEIGHT = response.headers['X-MBX-USED-WEIGHT-1M']\
                 if int(response.headers['X-MBX-USED-WEIGHT-1M']) > 0\
                 else response.headers['X-MBX-ORDER-COUNT-1M']
         except Exception as err:
             return await self.__reconnect(5, err)
         else:
-            if Api.reconnect > 0:
-                Api.reconnect = 0
-                Api.timeout = 2
+            if self.RECONNECT > 0:
+                self.RECONNECT = 0
+                self.TIMEOUT = self.timeout
             logger.log(
                 'API',
-                "      Request {}() Worked well! Ping: {:.2f} ms. Limit usage: {}".format(
+                "      Request {}() Worked well!. Limit usage: {}".format(
                     args[1],
-                    (time() * 1000)-start_time,
-                    Api.weight))
+                    self.WEIGHT))
             try:
                 res_json = ujson.loads(_response)
             except ValueError:
@@ -153,10 +157,10 @@ class Api:
                     -1,
                     f"(Binance Futures Api) [Json Value Error] response: {_response}")
             else:
-                await self._check_response(res_json)
+                await self.__check_response(res_json)
                 result['data'] = res_json
                 if self.show_limit_usage:
-                    result['limit_usage'] = Api.weight
+                    result['limit_usage'] = self.WEIGHT
                 if self.show_header:
                     result['header'] = response.headers
                 return result

@@ -92,7 +92,7 @@ class Market:
 
     async def get_public_historical_trades(self,
                                            symbol: str,
-                                           **kwargs) -> list:
+                                           **kwargs) -> dict:
         """**Old Trade Lookup**
             Get older market historical trades.
         Notes:
@@ -115,7 +115,7 @@ class Market:
 
     async def get_public_agg_trades(self,
                                     symbol: str,
-                                    **kwargs) -> list:
+                                    **kwargs) -> dict:
         """**Compressed/Aggregate Trades List**
             Get compressed, aggregate market trades.
             Market trades that fill at the time, from the same order,
@@ -144,7 +144,7 @@ class Market:
     async def get_public_klines(self,
                                 symbol: str,
                                 interval: str,
-                                **kwargs) -> list:
+                                **kwargs) -> dict:
         """**Kline/Candlestick Data**
             Kline/candlestick bars for a symbol. Klines are uniquely identified by their open time.
         Notes:
@@ -173,7 +173,7 @@ class Market:
                                            symbol: str,
                                            contract_type: str,
                                            interval: str,
-                                           **kwargs) -> list:
+                                           **kwargs) -> dict:
         """**Continuous Kline/Candlestick Data**
             Kline/candlestick bars for a specific contract type.
             Klines are uniquely identified by their open time.
@@ -205,7 +205,7 @@ class Market:
     async def get_public_index_price_klines(self,
                                             symbol: str,
                                             interval: str,
-                                            **kwargs) -> list:
+                                            **kwargs) -> dict:
         """**Kline/Candlestick Data for the index price of a pair.**
             Klines are uniquely identified by their open time.
 
@@ -234,7 +234,7 @@ class Market:
     async def get_public_mark_price_klines(self,
                                            symbol: str,
                                            interval: str,
-                                           **kwargs) -> list:
+                                           **kwargs) -> dict:
         """**Kline/candlestick bars for the mark price of a symbol.**
             Klines are uniquely identified by their open time.
 
@@ -260,7 +260,7 @@ class Market:
             **self._to_api(kwargs)
         )
 
-    async def get_public_mark_price(self, **kwargs) -> dict | list:
+    async def get_public_mark_price(self, **kwargs) -> dict:
         """**Mark Price and Funding Rate**
 
         Notes:
@@ -279,7 +279,7 @@ class Market:
 
     async def get_public_funding_rate(self,
                                       symbol: str,
-                                      **kwargs) -> list:
+                                      **kwargs) -> dict:
         """**Funding Rate History**
 
         Notes:
@@ -324,7 +324,7 @@ class Market:
             symbol=symbol
         )
 
-    async def get_public_ticker_price(self, **kwargs) -> dict | list:
+    async def get_public_ticker_price(self, **kwargs) -> dict:
         """**The Latest price for a symbol or symbols.**
 
         Notes:
@@ -343,7 +343,7 @@ class Market:
             **kwargs
         )
 
-    async def get_public_book_ticker(self, **kwargs) -> dict | list:
+    async def get_public_book_ticker(self, **kwargs) -> dict:
         """**Best price/qty on the order book for a symbol or symbols.**
         Notes:
             ``GET /fapi/v1/ticker/bookTicker``
@@ -381,7 +381,7 @@ class Market:
     async def get_public_blvt_kline(self,
                                     symbol: str,
                                     interval: str,
-                                    **kwargs) -> list:
+                                    **kwargs) -> dict:
         """**Get Historical BLVT NAV Kline**
 
         Notes:
@@ -408,7 +408,7 @@ class Market:
             **self._to_api(kwargs)
         )
 
-    async def get_public_index_info(self, **kwargs) -> list:
+    async def get_public_index_info(self, **kwargs) -> dict:
         """**Get Index Composite**
 
         Notes:
@@ -427,7 +427,7 @@ class Market:
             **kwargs
         )
 
-    async def get_public_asset_index(self, **kwargs) -> dict | list:
+    async def get_public_asset_index(self, **kwargs) -> dict:
         """**Get asset index for Multi-Assets mode**
 
         Notes:

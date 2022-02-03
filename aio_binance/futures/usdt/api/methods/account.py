@@ -12,8 +12,6 @@ class Account:
             https://binance-docs.github.io/apidocs/futures/en/#change-position-mode-trade
         Args:
             dual_side_position: "true": Hedge Mode; "false": One-way Mode
-
-        |
         """
         return await self._fetch(
             'POST',
@@ -161,7 +159,7 @@ class Account:
             **self._to_api(kwargs)
         )
 
-    async def create_private_batch_order(self, batch_orders: list[dict]) -> list[dict]:
+    async def create_private_batch_order(self, batch_orders: list[dict]) -> dict:
         """**Place Multiple Orders (TRADE)**
             Post a new batch order*
         Notes:
@@ -318,7 +316,7 @@ class Account:
 
     async def delete_private_batch_order(self,
                                          symbol: str,
-                                         order_id_list: list[int | str]) -> list:
+                                         order_id_list: list[int | str]) -> dict:
         """**Cancel Multiple Orders (TRADE)**
             Cancel a new batch order*
         Notes:
@@ -402,7 +400,7 @@ class Account:
             **params
         )
 
-    async def get_private_all_open_orders(self, **kwargs) -> list:
+    async def get_private_all_open_orders(self, **kwargs) -> dict:
         """**Current All Open Orders (USER_DATA)**
             Get all open orders on a symbol. Careful when accessing this with no symbol.
 
@@ -423,7 +421,7 @@ class Account:
 
     async def get_private_all_orders(self,
                                      symbol: str,
-                                     **kwargs) -> list:
+                                     **kwargs) -> dict:
         """**All Orders (USER_DATA)**
             Get all account orders; active, canceled, or filled.
         Notes:
@@ -447,7 +445,7 @@ class Account:
             **self._to_api(kwargs)
         )
 
-    async def get_private_balance(self) -> list:
+    async def get_private_balance(self) -> dict:
         """**Futures Account Balance V2 (USER_DATA)**
             Get current account balance
         Notes:
@@ -548,7 +546,7 @@ class Account:
 
     async def get_private_position_margin_history(self,
                                                   symbol: str,
-                                                  **kwargs) -> list:
+                                                  **kwargs) -> dict:
         """**Get Position Margin Change History (TRADE)**
             Get position margin history on a symbol.*
         Notes:
@@ -590,7 +588,7 @@ class Account:
 
     async def get_private_account_trades(self,
                                          symbol: str,
-                                         **kwargs) -> list:
+                                         **kwargs) -> dict:
         """**Account Trade List (USER_DATA)**
             *Get trades for a specific account and symbol.*
         Notes:
@@ -619,7 +617,7 @@ class Account:
             **self._to_api(kwargs)
         )
 
-    async def get_private_income_history(self, **kwargs) -> list:
+    async def get_private_income_history(self, **kwargs) -> dict:
         """**Get Income History (USER_DATA)**
             Get trades for a specific account and symbol.
         Notes:
@@ -647,7 +645,7 @@ class Account:
             **self._to_api(kwargs)
         )
 
-    async def get_private_leverage_brackets(self, **kwargs) -> list:
+    async def get_private_leverage_brackets(self, **kwargs) -> dict:
         """**Notional and Leverage Brackets (USER_DATA)**
             Get notional and leverage bracket.*
         Notes:
@@ -664,7 +662,7 @@ class Account:
             **kwargs
         )
 
-    async def get_private_adl_quantile(self, **kwargs) -> list:
+    async def get_private_adl_quantile(self, **kwargs) -> dict:
         """**Position ADL Quantile Estimation (USER_DATA)**
             Get Position ADL Quantile Estimation
         Notes:
@@ -694,7 +692,7 @@ class Account:
             **kwargs
         )
 
-    async def get_private_force_orders(self, **kwargs) -> list:
+    async def get_private_force_orders(self, **kwargs) -> dict:
         """**User's Force Orders (USER_DATA)**
             Get User's Force Orders
         Notes:
