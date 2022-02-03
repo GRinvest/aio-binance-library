@@ -60,6 +60,38 @@ async def main():
 asyncio.run(main())
 
 ```
+Or you can use session (For multiple requests, this acts faster):
+```python
+import asyncio
+from aio_binance.futures.usdt import ApiSession 
+
+async def main():
+  
+    async with ApiSession(key='<api_key>', secret='<api_secret>') as session:
+      
+        res = await session.get_public_time()
+        print(res)
+    
+        # Get account information
+        res = await session.get_private_account_info()
+        print(res)
+    
+        # Post a new order
+        params = {
+            'symbol': 'BTCUSDT',
+            'side': 'SELL',
+            'type_order': 'LIMIT',
+            'time_in_force': 'GTC',
+            'quantity': 0.002,
+            'price': 59808
+        }
+    
+        res = await session.create_private_order(**params)
+        print(res)
+
+asyncio.run(main())
+
+```
 Please find `examples` folder to check for more endpoints.
 
 ### Notes
