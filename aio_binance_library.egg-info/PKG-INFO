@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: aio-binance-library
-Version: 2.0.6
+Version: 2.0.7
 Summary: This is a lightweight Async library that works as a connector to Binance public API and WebSocket.
 Home-page: https://github.com/GRinvest/aio-binance-library
 Author: GRinvest
@@ -11,11 +11,8 @@ Platform: UNKNOWN
 Classifier: Intended Audience :: Developers
 Classifier: Intended Audience :: Financial and Insurance Industry
 Classifier: License :: OSI Approved :: MIT License
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
-Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
-Requires-Python: >=3.7
+Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 
 # aio-binance-library

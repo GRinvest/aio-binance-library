@@ -1,7 +1,3 @@
-import sys
-
-from loguru import logger
-
 from aio_binance.futures.usdt.api.methods.account import Account
 from aio_binance.futures.usdt.api.methods.market import Market
 from aio_binance.futures.usdt.api.methods.stream import DataStream

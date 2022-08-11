@@ -140,7 +140,10 @@ class Api:
                 if int(response.headers['X-MBX-USED-WEIGHT-1M']) > 0\
                 else response.headers['X-MBX-ORDER-COUNT-1M']
         except Exception as err:
-            return await self.__reconnect(5, err)
+            if 'private' in args[1]:
+                raise BinanceException(-8888, err)
+            else:
+                return await self.__reconnect(5, err)
         else:
             if self.RECONNECT > 0:
                 self.RECONNECT = 0
