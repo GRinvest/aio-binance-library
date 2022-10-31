@@ -395,7 +395,7 @@ class Account:
             else {"symbol": symbol, "origClientOrderId": order_id}
         return await self._fetch(
             'GET',
-            'get_private_open_order,'
+            'get_private_open_order',
             '/fapi/v1/openOrder',
             **params
         )
