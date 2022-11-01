@@ -166,4 +166,4 @@ class Api:
                     result['limit_usage'] = self.WEIGHT
                 if self.show_header:
                     result['header'] = response.headers
-                return result
+                return result['data']
